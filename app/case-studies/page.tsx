@@ -23,7 +23,7 @@ const CASES: CaseStudy[] = [
   overview:
     "Helped a growing Shopify fashion brand increase organic traffic and sales through technical SEO improvements, optimized product pages, and conversion-focused design updates.",
   featuredImage:
-    "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=1200&auto=format&fit=crop",
+    "https://themix.ng/products/boohooman-distorted-print-short-sleeve-oversized-shirt?variant=47321061163244&country=NG&currency=NGN&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic&utm_source=Google%3E&utm_medium=cpc&utm_campaign=shopping_ads&gad_source=1&gad_campaignid=23531541007&gbraid=0AAAAA_3hsHn3OVqS4yDZFgbl18jQwU1kh&gclid=Cj0KCQjwsdnNBhC4ARIsAA_3hejTX-hu_X-erzY-hfv2fZC4WORHp5Gkdn6GayehQfdnUL4AF5Iw42EaAu0GEALw_wcB",
 },
 ];
 
