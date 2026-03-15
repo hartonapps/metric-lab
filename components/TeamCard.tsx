@@ -23,7 +23,8 @@ export default function TeamCard({
   image,
   isViewAll = false,
 }: Props) {
-  const cardRef = useRef<HTMLDivElement>(null);
+  // Use a generic HTMLElement ref to work for both div and a
+  const cardRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!cardRef.current) return;
@@ -44,21 +45,18 @@ export default function TeamCard({
   /* ---------------------------------- */
   /* VIEW FULL TEAM CARD                */
   /* ---------------------------------- */
-
   if (isViewAll) {
     return (
       <Link
         href="/team-directory"
-        ref={cardRef}
+        ref={cardRef as React.Ref<HTMLAnchorElement>} // cast to satisfy TS
         className="group relative rounded-xl border border-gray-800 bg-[#0b0b0b] p-8 flex flex-col items-center justify-center text-center hover:border-[#95BF47] transition duration-300"
       >
         {/* Glow */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 blur-3xl bg-[#95BF47]/10"></div>
 
         <div className="relative z-10">
-          <p className="text-lg font-semibold text-white mb-2">
-            View Full Team
-          </p>
+          <p className="text-lg font-semibold text-white mb-2">View Full Team</p>
 
           <div className="flex items-center justify-center gap-2 text-[#95BF47] group-hover:gap-3 transition-all duration-300">
             <span className="text-sm font-medium">Explore</span>
@@ -72,29 +70,25 @@ export default function TeamCard({
   /* ---------------------------------- */
   /* NORMAL TEAM CARD                   */
   /* ---------------------------------- */
-
   const mailto = email
     ? `mailto:${email}?subject=Shopify Growth Inquiry`
     : `mailto:hellometriclab@gmail.com?subject=Shopify Growth Inquiry`;
 
   return (
     <div
-      ref={cardRef}
+      ref={cardRef as React.Ref<HTMLDivElement>} // cast to satisfy TS
       className="group relative rounded-xl p-[1px] bg-gradient-to-br from-[#95BF47]/40 via-transparent to-[#95BF47]/40 hover:from-[#95BF47] hover:to-[#95BF47] transition duration-500"
     >
       <div className="flex flex-col justify-between bg-[#0b0b0b]/95 backdrop-blur-lg border border-gray-800 rounded-xl p-7 h-full relative overflow-hidden">
-
         {/* Glow background */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 blur-3xl bg-[#95BF47]/10"></div>
 
         {/* CONTENT */}
         <div className="flex flex-col items-center text-center relative z-10">
-
           {/* Avatar */}
           {image && (
             <div className="relative mb-5">
               <div className="absolute inset-0 rounded-full blur-xl bg-[#95BF47]/30 opacity-0 group-hover:opacity-100 transition"></div>
-
               <img
                 src={image}
                 alt={name}
@@ -112,9 +106,7 @@ export default function TeamCard({
           <p className="text-gray-400 text-sm mt-1">{role}</p>
 
           {/* Bio */}
-          <p className="text-gray-400 text-sm mt-3 leading-relaxed max-w-xs">
-            {bio}
-          </p>
+          <p className="text-gray-400 text-sm mt-3 leading-relaxed max-w-xs">{bio}</p>
         </div>
 
         {/* CONTACT BUTTON */}
