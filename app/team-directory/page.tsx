@@ -32,6 +32,13 @@ const TEAM: TeamMember[] = [
     email: "bob@metriclab.com",
     image: "https://randomuser.me/api/portraits/men/98.jpg",
   },
+    {
+    name: "Carolina",
+    role: "Marketing Strategist",
+    bio: "Designs high-converting marketing funnels.",
+    email: "caroolina@metriclab.com",
+    image: "https://randomuser.me/api/portraits/women/44.jpg",
+  },
   {
     name: "Carol Lee",
     role: "Marketing Strategist",
