@@ -53,7 +53,7 @@ const CASES: CaseStudy[] = [
     "Executed a successful launch strategy for a Shopify skincare brand, generating strong traffic and first-month sales.",
   featuredImage:
     "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1200&auto=format&fit=crop",
-}
+},
 {
   slug: "shopify-email-marketing-growth",
   title: "Shopify Email Marketing Growth",
