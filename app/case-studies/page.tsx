@@ -25,6 +25,54 @@ const CASES: CaseStudy[] = [
   featuredImage:
     "https://themix.ng/products/boohooman-distorted-print-short-sleeve-oversized-shirt?variant=47321061163244&country=NG&currency=NGN&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic&utm_source=Google%3E&utm_medium=cpc&utm_campaign=shopping_ads&gad_source=1&gad_campaignid=23531541007&gbraid=0AAAAA_3hsHn3OVqS4yDZFgbl18jQwU1kh&gclid=Cj0KCQjwsdnNBhC4ARIsAA_3hejTX-hu_X-erzY-hfv2fZC4WORHp5Gkdn6GayehQfdnUL4AF5Iw42EaAu0GEALw_wcB",
 },
+  {
+  slug: "shopify-conversion-redesign",
+  title: "Shopify Conversion Rate Redesign",
+  industry: "E-commerce",
+  overview:
+    "Improved conversion rate for a Shopify electronics store by redesigning product pages and simplifying checkout flow.",
+  featuredImage:
+    "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop",
+},
+
+{
+  slug: "shopify-speed-optimization",
+  title: "Shopify Store Speed Optimization",
+  industry: "E-commerce",
+  overview:
+    "Boosted site performance and user experience by optimizing scripts, compressing assets, and improving Shopify page load times.",
+  featuredImage:
+    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop",
+},
+
+{
+  slug: "shopify-product-launch-campaign",
+  title: "Shopify Product Launch Campaign",
+  industry: "E-commerce",
+  overview:
+    "Executed a successful launch strategy for a Shopify skincare brand, generating strong traffic and first-month sales.",
+  featuredImage:
+    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1200&auto=format&fit=crop",
+}
+{
+  slug: "shopify-email-marketing-growth",
+  title: "Shopify Email Marketing Growth",
+  industry: "E-commerce",
+  overview:
+    "Implemented automated email flows that significantly increased repeat purchases and customer retention.",
+  featuredImage:
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop",
+},
+
+{
+  slug: "shopify-store-migration",
+  title: "E-commerce Platform Migration to Shopify",
+  industry: "E-commerce",
+  overview:
+    "Successfully migrated an online furniture brand from WooCommerce to Shopify with improved performance and usability.",
+  featuredImage:
+    "https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1200&auto=format&fit=crop",
+},
 ];
 
 export default function CaseStudies() {
