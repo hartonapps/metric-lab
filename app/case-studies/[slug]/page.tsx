@@ -17,37 +17,28 @@ type CaseStudyDetail = {
 };
 
 const CASE_DETAILS: CaseStudyDetail[] = [
-  {
-    slug: "shopify-seo-boost",
-    title: "Shopify SEO Boost",
-    industry: "E-commerce",
-    overview: "Increased organic traffic by 150% for a Shopify store in 3 months.",
-    problem: "Low organic traffic and poor search rankings.",
-    strategy: "Optimized SEO, meta tags, content strategy.",
-    results: "150% increase in traffic and improved conversions.",
-    keyMetrics: "Traffic +150%, Conversion +38%, Rankings Top 3",
-    featuredImage: "https://i0.wp.com/learn.onemonth.com/wp-content/uploads/2017/08/1-10.png?fit=845%2C503&ssl=1",
-    gallery: [
-      "https://i0.wp.com/learn.onemonth.com/wp-content/uploads/2017/08/1-10.png?fit=845%2C503&ssl=1",
-      "https://i0.wp.com/learn.onemonth.com/wp-content/uploads/2017/08/1-10.png?fit=845%2C503&ssl=1",
-      "https://i0.wp.com/learn.onemonth.com/wp-content/uploads/2017/08/1-10.png?fit=845%2C503&ssl=1",
-    ],
-  },  {
-    slug: "conversion-optimize",
-    title: "Shopify SEO Boost",
-    industry: "E-commerce",
-    overview: "Increased organic traffic by 150% for a Shopify store in 3 months.",
-    problem: "Low organic traffic and poor search rankings.",
-    strategy: "Optimized SEO, meta tags, content strategy.",
-    results: "150% increase in traffic and improved conversions.",
-    keyMetrics: "Traffic +150%, Conversion +38%, Rankings Top 3",
-    featuredImage: "https://i0.wp.com/learn.onemonth.com/wp-content/uploads/2017/08/1-10.png?fit=845%2C503&ssl=1",
-    gallery: [
-      "https://i0.wp.com/learn.onemonth.com/wp-content/uploads/2017/08/1-10.png?fit=845%2C503&ssl=1",
-      "https://i0.wp.com/learn.onemonth.com/wp-content/uploads/2017/08/1-10.png?fit=845%2C503&ssl=1",
-      "https://i0.wp.com/learn.onemonth.com/wp-content/uploads/2017/08/1-10.png?fit=845%2C503&ssl=1",
-    ],
-  },
+{
+  slug: "shopify-fashion-store-growth",
+  title: "Scaling a Shopify Fashion Store with SEO & CRO",
+  industry: "E-commerce",
+  overview: "A mid-sized Shopify fashion brand partnered with us to improve search visibility and increase online sales through SEO optimization and conversion-focused store improvements.",
+
+  problem: "The store had great products but struggled with low organic visibility, slow page speed, and poorly optimized product pages which limited traffic and conversions.",
+
+  strategy: "We performed a full Shopify SEO audit, optimized product and collection pages, improved technical SEO, enhanced page speed, implemented structured data, and redesigned key landing pages for better conversion.",
+
+  results: "Within 4 months, the store experienced significant growth in organic traffic, higher rankings for competitive keywords, and a noticeable increase in online sales.",
+
+  keyMetrics: "Traffic +162%, Conversion Rate +41%, Revenue +58%, 12 Keywords Ranking Top 3",
+
+  featuredImage: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=1200&auto=format&fit=crop",
+
+  gallery: [
+    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1607082350899-7e105aa886ae?q=80&w=1200&auto=format&fit=crop",
+  ],
+},
 ];
 
 export default function CaseStudyPage() {
