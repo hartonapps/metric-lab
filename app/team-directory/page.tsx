@@ -12,47 +12,13 @@ type TeamMember = {
 };
 
 const TEAM: TeamMember[] = [
-  {
-    name: "Alice Johnson",
-    role: "Shopify Engineer",
-    bio: "Builds scalable and optimized Shopify stores.",
-    email: "alice@metriclab.com",
-    image: "https://randomuser.me/api/portraits/women/68.jpg",
-  },
-  {
-    name: "Bob Smith",
-    role: "SEO",
-    bio: "Leads data-driven SEO campaigns for ecommerce growth.",
-    email: "bob@metrclab.com",
-    image: "https://randomuser.me/api/portraits/men/32.jpg",
-  }, {
-    name: "Bob Laiyl",
-    role: "SEO Player",
-    bio: "Leads data-driven SEO campaigns for ecommerce growth.",
-    email: "bob@metriclab.com",
-    image: "https://randomuser.me/api/portraits/men/98.jpg",
-  },
-    {
-    name: "Carolina",
-    role: "Marketing Strategist",
-    bio: "Designs high-converting marketing funnels.",
-    email: "caroolina@metriclab.com",
-    image: "https://randomuser.me/api/portraits/women/44.jpg",
-  },
-  {
-    name: "Carol Lee",
-    role: "Marketing Strategist",
-    bio: "Designs high-converting marketing funnels.",
-    email: "carol@metriclab.com",
-    image: "https://randomuser.me/api/portraits/women/44.jpg",
-  },
-  {
-    name: "David King",
-    role: "Full Stack Developer",
-    bio: "Handles Shopify apps and integrations.",
-    email: "david@metriclab.com",
-    image: "https://randomuser.me/api/portraits/men/45.jpg",
-  },
+{
+  name: "Kate Williams",
+  role: "Shopify Consultant",
+  bio: "Helps brands build, optimize, and scale high-performing Shopify stores.",
+  email: "iamkatewilliams084@gmail",
+  image: "https://randomuser.me/api/portraits/women/1.jpg",
+},
 ];
 
 export default function TeamDirectory() {
