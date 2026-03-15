@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Metric Lab Website
 
-## Getting Started
+Official website for **Metric Lab**, a Shopify growth engineering team focused on building scalable e-commerce solutions.
 
-First, run the development server:
+This project is built using **Next.js, Tailwind CSS, and GSAP** to create a fast, modern, and responsive agency website.
+
+---
+
+## 🚀 Tech Stack
+
+* **Next.js 16** – React framework for production applications
+* **Tailwind CSS** – Utility-first styling
+* **GSAP** – Smooth animations
+* **Lucide Icons / Heroicons** – UI icons
+* **TypeScript** – Type-safe development
+
+---
+
+## 📂 Project Structure
+
+```
+app/
+  page.tsx            # Homepage
+  layout.tsx          # Global layout
+  gallery/            # Gallery page
+  case-studies/       # Case studies pages
+  team-directory/     # Full team listing
+  not-found.tsx       # 404 page
+
+components/
+  Navbar.tsx
+  TeamCard.tsx
+  Container.tsx
+  Section.tsx
+  Footer.tsx
+
+data/
+  gallery.ts
+  services.ts
+  team.ts
+  caseStudies.ts
+
+public/
+  images/             # Static assets
+```
+
+---
+
+## ✨ Features
+
+* Modern responsive design
+* Animated UI using GSAP
+* Team directory system
+* Case studies showcase
+* Image gallery
+* FAQ section
+* JSON-driven content (no backend required)
+* Clean component architecture
+
+---
+
+## ⚙️ Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/metric-lab.git
+```
+
+Navigate into the project:
+
+```bash
+cd metric-lab
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The site will be available at:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🧠 Content Management
 
-To learn more about Next.js, take a look at the following resources:
+This project does **not use a database**.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+All dynamic content is managed through JSON/TypeScript files in the `/data` folder.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Example:
 
-## Deploy on Vercel
+```
+data/gallery.ts
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To add a new gallery image, simply add another URL to the array.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+const GALLERY = [
+  "image1.jpg",
+  "image2.jpg",
+  "image3.jpg"
+]
+```
+
+Push changes to GitHub and redeploy.
+
+---
+
+## 📦 Deployment
+
+Recommended platform:
+
+**Vercel**
+
+Steps:
+
+1. Push project to GitHub
+2. Import repository into Vercel
+3. Deploy
+
+Every GitHub push will trigger automatic deployment.
+
+## 📧 Contact
+
+Metric Lab
+Shopify Growth Engineering Team
+
+For inquiries:
+
+**[hellometriclab@gmail.com](mailto:hellometriclab@gmail.com)**
+
+
+## 📜 License
+
+This project is for the official Metric Lab website.
+
+All rights reserved.
