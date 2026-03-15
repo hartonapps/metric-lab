@@ -39,6 +39,90 @@ const CASE_DETAILS: CaseStudyDetail[] = [
     "https://images.unsplash.com/photo-1607082350899-7e105aa886ae?q=80&w=1200&auto=format&fit=crop",
   ],
 },
+  {
+  slug: "shopify-conversion-redesign",
+  title: "Shopify Conversion Rate Redesign",
+  industry: "E-commerce",
+  overview: "An electronics retailer partnered with us to improve their Shopify store's user experience and increase conversion rates.",
+  problem: "The store had strong traffic but low conversions due to cluttered product pages and a complicated checkout process.",
+  strategy: "We redesigned product layouts, improved product descriptions, added trust signals, and simplified the checkout experience.",
+  results: "The store saw a strong increase in completed purchases and improved customer engagement.",
+  keyMetrics: "Conversion +36%, Cart Abandonment -22%, Revenue +40%",
+  featuredImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop",
+  gallery: [
+    "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?q=80&w=1200&auto=format&fit=crop",
+  ],
+},
+
+{
+  slug: "shopify-speed-optimization",
+  title: "Shopify Store Speed Optimization",
+  industry: "E-commerce",
+  overview: "A growing Shopify store struggled with slow load times that negatively impacted SEO rankings and customer experience.",
+  problem: "Heavy themes, large images, and unused scripts caused slow performance across mobile and desktop.",
+  strategy: "We optimized code, compressed media files, removed unnecessary apps, and implemented lazy loading.",
+  results: "The site became significantly faster which improved SEO rankings and reduced bounce rate.",
+  keyMetrics: "Page Speed +72%, Bounce Rate -31%, Traffic +24%",
+  featuredImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop",
+  gallery: [
+    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1559028012-481c04fa702d?q=80&w=1200&auto=format&fit=crop",
+  ],
+},
+
+{
+  slug: "shopify-product-launch-campaign",
+  title: "Shopify Product Launch Campaign",
+  industry: "E-commerce",
+  overview: "Supported a skincare brand launching a new product line on Shopify with a targeted marketing and landing page strategy.",
+  problem: "The brand needed to generate awareness and sales quickly after launching a new product.",
+  strategy: "We created optimized landing pages, email campaigns, and targeted ads to drive qualified traffic.",
+  results: "The launch campaign generated strong engagement and exceeded the brand's first-month sales goals.",
+  keyMetrics: "Revenue +65%, Traffic +120%, Email Subscribers +2,400",
+  featuredImage: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1200&auto=format&fit=crop",
+  gallery: [
+    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1596464716127-f2a82984de30?q=80&w=1200&auto=format&fit=crop",
+  ],
+},
+
+{
+  slug: "shopify-email-marketing-growth",
+  title: "Shopify Email Marketing Growth",
+  industry: "E-commerce",
+  overview: "Implemented a full email marketing automation system for a Shopify lifestyle brand.",
+  problem: "The store relied heavily on paid ads and had no structured email marketing strategy.",
+  strategy: "We built automated flows including welcome emails, abandoned cart recovery, and post-purchase follow-ups.",
+  results: "Email quickly became one of the brand's highest-performing revenue channels.",
+  keyMetrics: "Email Revenue +48%, Repeat Customers +33%, Cart Recovery +21%",
+  featuredImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop",
+  gallery: [
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1556742031-c6961e8560b0?q=80&w=1200&auto=format&fit=crop",
+  ],
+},
+
+{
+  slug: "shopify-store-migration",
+  title: "E-commerce Platform Migration to Shopify",
+  industry: "E-commerce",
+  overview: "Migrated a furniture retailer from WooCommerce to Shopify to improve scalability and ease of management.",
+  problem: "The previous platform caused frequent downtime and made inventory management difficult.",
+  strategy: "We handled full product migration, redesigned the store, and optimized the new Shopify setup.",
+  results: "The brand experienced smoother operations and better customer experience after the migration.",
+  keyMetrics: "Page Speed +60%, Sales +34%, Bounce Rate -28%",
+  featuredImage: "https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1200&auto=format&fit=crop",
+  gallery: [
+    "https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1200&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1560185008-b033106af5c3?q=80&w=1200&auto=format&fit=crop",
+  ],
+},
 ];
 
 export default function CaseStudyPage() {
