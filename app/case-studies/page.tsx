@@ -17,30 +17,14 @@ type CaseStudy = {
 
 const CASES: CaseStudy[] = [
   {
-    slug: "shopify-seo-boost",
-    title: "Shopify SEO Boost",
-    industry: "E-commerce",
-    overview:
-      "Increased organic traffic by 150% for a Shopify store in 3 months.",
-    featuredImage:
-      "https://i0.wp.com/learn.onemonth.com/wp-content/uploads/2017/08/1-10.png?fit=845%2C503&ssl=1",
-  },
-  {
-    slug: "conversion-optimize",
-    title: "Conversion Optimization",
-    industry: "Fashion",
-    overview: "Redesigned store layout to increase conversion rate by 35%.",
-    featuredImage:
-      "https://i0.wp.com/learn.onemonth.com/wp-content/uploads/2017/08/1-10.png?fit=845%2C503&ssl=1",
-  },
-  {
-    slug: "google-ads-campaign",
-    title: "Google Ads Campaign",
-    industry: "Electronics",
-    overview: "Managed PPC campaigns with 5x ROI.",
-    featuredImage:
-      "https://i0.wp.com/learn.onemonth.com/wp-content/uploads/2017/08/1-10.png?fit=845%2C503&ssl=1",
-  },
+  slug: "shopify-fashion-store-growth",
+  title: "Scaling a Shopify Fashion Store with SEO & CRO",
+  industry: "E-commerce",
+  overview:
+    "Helped a growing Shopify fashion brand increase organic traffic and sales through technical SEO improvements, optimized product pages, and conversion-focused design updates.",
+  featuredImage:
+    "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=1200&auto=format&fit=crop",
+},
 ];
 
 export default function CaseStudies() {
