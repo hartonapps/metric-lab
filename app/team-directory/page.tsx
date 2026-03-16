@@ -16,7 +16,7 @@ const TEAM: TeamMember[] = [
   name: "Kate Williams",
   role: "Shopify Consultant",
   bio: "Helps brands build, optimize, and scale high-performing Shopify stores.",
-  email: "iamkatewilliams084@gmail",
+  email: "iamkatewilliams084@gmail.com",
   image: "https://randomuser.me/api/portraits/women/1.jpg",
 },
 ];
