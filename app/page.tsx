@@ -90,6 +90,11 @@ export default function Home() {
           <p className="text-gray-400 mt-2 text-sm">Support</p>
         </div>
 
+        <div className="bg-[#111] border border-gray-800 rounded-xl p-6 hover:border-[#95BF47] transition">
+          <h3 className="text-3xl font-bold text-[#95BF47]">100+</h3>
+          <p className="text-gray-400 mt-2 text-sm">teams to choose from</p>
+        </div>
+        
       </div>
     </div>
   </div>
@@ -105,28 +110,30 @@ export default function Home() {
 
     <div className="grid md:grid-cols-3 gap-8">
 
-      <ServiceCard
-        title="Shopify Storefront Engineering"
-        description="We design and develop high-performance Shopify storefronts optimized for speed, UX, and conversion."
-      />
+<ServiceCard
+  title="Store Audit & Growth Strategy"
+  description="Comprehensive store audits with actionable insights and data-driven strategies to identify gaps, improve performance, and unlock scalable growth."
+/>
 
-      <ServiceCard
-        title="Technical SEO"
-        description="Advanced Shopify SEO strategies including technical optimization, structured data, and search performance improvements."
-      />
+<ServiceCard
+  title="Shopify Store Design & Development"
+  description="High-converting Shopify store design and development focused on seamless user experience, modern UI, and revenue-driven structure."
+/>
 
-      <ServiceCard
-        title="Conversion Rate Optimization"
-        description="Data-driven experimentation to improve product pages, funnels, and checkout conversion rates."
-      />
+<ServiceCard
+  title="Paid Advertising & Traffic Acquisition"
+  description="Strategic ad campaigns across platforms like Meta and Google to drive targeted traffic, increase visibility, and generate consistent sales."
+/>
 
-        <ServiceCard
-        title="Store Speed Optimization"
-        description="Data-driven experimentation to improve product pages, funnels, and checkout conversion rates."
-      />
+<ServiceCard
+  title="Conversion Rate Optimization"
+  description="Continuous testing and optimization of product pages, funnels, and checkout to maximize conversions and boost revenue."
+/>
 
-    </div>
-
+<ServiceCard
+  title="Performance & Speed Optimization"
+  description="Advanced speed and performance optimization to ensure fast load times, better user experience, and improved search rankings."
+/>
   </div>
 </Section>
 
