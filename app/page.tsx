@@ -110,30 +110,32 @@ export default function Home() {
 
     <div className="grid md:grid-cols-3 gap-8">
 
-<ServiceCard
-  title="Store Audit & Growth Strategy"
-  description="Comprehensive store audits with actionable insights and data-driven strategies to identify gaps, improve performance, and unlock scalable growth."
-/>
+      <ServiceCard
+        title="Store Audit & Growth Strategy"
+        description="Comprehensive store audits with actionable insights and data-driven strategies to identify gaps, improve performance, and unlock scalable growth."
+      />
 
-<ServiceCard
-  title="Shopify Store Design & Development"
-  description="High-converting Shopify store design and development focused on seamless user experience, modern UI, and revenue-driven structure."
-/>
+      <ServiceCard
+        title="Shopify Store Design & Development"
+        description="High-converting Shopify store design and development focused on seamless user experience, modern UI, and revenue-driven structure."
+      />
 
-<ServiceCard
-  title="Paid Advertising & Traffic Acquisition"
-  description="Strategic ad campaigns across platforms like Meta and Google to drive targeted traffic, increase visibility, and generate consistent sales."
-/>
+      <ServiceCard
+        title="Paid Advertising & Traffic Acquisition"
+        description="Strategic ad campaigns across platforms like Meta and Google to drive targeted traffic, increase visibility, and generate consistent sales."
+      />
 
-<ServiceCard
-  title="Conversion Rate Optimization"
-  description="Continuous testing and optimization of product pages, funnels, and checkout to maximize conversions and boost revenue."
-/>
+      <ServiceCard
+        title="Conversion Rate Optimization"
+        description="Continuous testing and optimization of product pages, funnels, and checkout to maximize conversions and boost revenue."
+      />
 
-<ServiceCard
-  title="Performance & Speed Optimization"
-  description="Advanced speed and performance optimization to ensure fast load times, better user experience, and improved search rankings."
-/>
+      <ServiceCard
+        title="Performance & Speed Optimization"
+        description="Advanced speed and performance optimization to ensure fast load times, better user experience, and improved search rankings."
+      />
+
+    </div>
   </div>
 </Section>
 
