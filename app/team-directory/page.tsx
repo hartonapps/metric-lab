@@ -1,7 +1,10 @@
+// app/team-directory/page.tsx  (or wherever your TeamDirectory file lives)
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TeamCard from "../../components/TeamCard";
+import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebaseClient";
 
 type TeamMember = {
   name: string;
@@ -9,22 +12,54 @@ type TeamMember = {
   bio: string;
   email: string;
   image: string;
+  id?: string;
 };
-
-const TEAM: TeamMember[] = [
-{
-  name: "Kate Williams",
-  role: "Shopify Consultant",
-  bio: "Helps brands build, optimize, and scale high-performing Shopify stores.",
-  email: "iamkatewilliams084@gmail.com",
-  image: "https://randomuser.me/api/portraits/women/1.jpg",
-},
-];
 
 export default function TeamDirectory() {
   const [search, setSearch] = useState("");
+  const [team, setTeam] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredTeam = TEAM.filter(
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+
+    // Query: only published team members (optional). Remove where(...) if not using status.
+    const q = query(
+      collection(db, "teams"),
+      // where("status", "==", "published"), // uncomment if you use status
+      orderBy("name", "asc")
+    );
+
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        const items: TeamMember[] = snapshot.docs.map((doc) => {
+          const data = doc.data() as any;
+          return {
+            id: doc.id,
+            name: data.name || "",
+            role: data.role || "",
+            bio: data.bio || "",
+            email: data.email || "",
+            image: data.image || "",
+          };
+        });
+        setTeam(items);
+        setLoading(false);
+      },
+      (err) => {
+        console.error("Firestore error:", err);
+        setError("Failed to load team. Try again later.");
+        setLoading(false);
+      }
+    );
+
+    return () => unsub();
+  }, []);
+
+  const filteredTeam = team.filter(
     (member) =>
       member.name.toLowerCase().includes(search.toLowerCase()) ||
       member.role.toLowerCase().includes(search.toLowerCase())
@@ -48,20 +83,28 @@ export default function TeamDirectory() {
           />
         </div>
 
+        {/* Status */}
+        {loading && <p className="text-center text-gray-300 mb-6">Loading team…</p>}
+        {error && <p className="text-center text-red-400 mb-6">{error}</p>}
+
         {/* Team Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredTeam.map((member) => (
-            <TeamCard
-              key={member.email}
-              name={member.name}
-              role={member.role}
-              bio={member.bio}
-              email={member.email}
-              image={member.image}
-            />
-          ))}
+          {filteredTeam.length === 0 && !loading ? (
+            <p className="text-gray-400 col-span-full text-center">No team members found.</p>
+          ) : (
+            filteredTeam.map((member) => (
+              <TeamCard
+                key={member.id ?? member.email}
+                name={member.name}
+                role={member.role}
+                bio={member.bio}
+                email={member.email}
+                image={member.image}
+              />
+            ))
+          )}
         </div>
       </div>
     </main>
   );
-}
+        }
