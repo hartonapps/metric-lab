@@ -1,3 +1,4 @@
+// components/TeamCard.tsx
 "use client";
 
 import { useRef, useEffect } from "react";
@@ -16,14 +17,13 @@ type Props = {
 };
 
 export default function TeamCard({
-  name,
-  role,
+  name = "Team Member",
+  role = "Team Role",
   bio,
   email,
   image,
   isViewAll = false,
 }: Props) {
-  // Separate refs for Link and div
   const linkRef = useRef<HTMLAnchorElement>(null);
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -65,9 +65,14 @@ export default function TeamCard({
   /* ---------------------------------- */
   /* NORMAL TEAM CARD                   */
   /* ---------------------------------- */
-  const mailto = email
-    ? `mailto:${email}?subject=Shopify Growth Inquiry`
-    : `mailto:hellometriclab@gmail.com?subject=Shopify Growth Inquiry`;
+
+  // Build mailto subject and body using the member's name and role.
+  const toEmail = email && email.trim().length > 0 ? email.trim() : "hellometriclab@gmail.com";
+  const subject = encodeURIComponent("Shopify Growth Inquiry");
+  const bodyText = `Hello ${name},\n\nI need a ${role} for my Shopify store.\n\nThanks,\n`;
+  const body = encodeURIComponent(bodyText);
+
+  const mailto = `mailto:${toEmail}?subject=${subject}&body=${body}`;
 
   return (
     <div
