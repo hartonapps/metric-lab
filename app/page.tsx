@@ -94,6 +94,12 @@ export default function Home() {
           <h3 className="text-3xl font-bold text-[#95BF47]">100+</h3>
           <p className="text-gray-400 mt-2 text-sm">teams to choose from</p>
         </div>
+
+
+        <div className="bg-[#111] border border-gray-800 rounded-xl p-6 hover:border-[#95BF47] transition">
+          <h3 className="text-3xl font-bold text-[#95BF47]">$100k+</h3>
+          <p className="text-gray-400 mt-2 text-sm">Ad spend managed</p>
+        </div>
         
       </div>
     </div>
