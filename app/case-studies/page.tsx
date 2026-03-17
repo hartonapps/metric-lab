@@ -28,34 +28,6 @@ const CASES: CaseStudy[] = [
   overview:
     "Improved conversion rate for a Shopify electronics store by redesigning product pages and simplifying checkout flow.",
 },
-{
-  slug: "shopify-speed-optimization",
-  title: "Shopify Store Speed Optimization",
-  industry: "E-commerce",
-  overview:
-    "Boosted site performance and user experience by optimizing scripts, compressing assets, and improving Shopify page load times.",
-},
-{
-  slug: "shopify-product-launch-campaign",
-  title: "Shopify Product Launch Campaign",
-  industry: "E-commerce",
-  overview:
-    "Executed a successful launch strategy for a Shopify skincare brand, generating strong traffic and first-month sales.",
-},
-{
-  slug: "shopify-email-marketing-growth",
-  title: "Shopify Email Marketing Growth",
-  industry: "E-commerce",
-  overview:
-    "Implemented automated email flows that significantly increased repeat purchases and customer retention.",
-},
-{
-  slug: "shopify-store-migration",
-  title: "E-commerce Platform Migration to Shopify",
-  industry: "E-commerce",
-  overview:
-    "Successfully migrated an online furniture brand from WooCommerce to Shopify with improved performance and usability.",
-},
 ];
 
 export default function CaseStudies() {
