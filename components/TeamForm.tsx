@@ -29,7 +29,7 @@ export default function TeamForm() {
   useEffect(() => {
     const today = new Date();
     const day = today.getDay();
-    const diff = (8 - day) % 7 || 7; // next Monday
+    const diff = (8 - day) % 7 || 7;
     const monday = new Date(today);
     monday.setDate(today.getDate() + diff);
 
@@ -51,8 +51,9 @@ export default function TeamForm() {
     if (!form.role.trim()) return "Role is required.";
     if (!form.email.trim()) return "Email is required.";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) return "Enter a valid email.";
-    if (form.image && !/^https?:\/\/.+\..+/.test(form.image))
-      return "Enter a valid image URL.";
+    if (!form.image.trim()) return "Image is required.";
+    if (!/^https?:\/\/.+\..+/.test(form.image))
+      return "Paste a valid image link.";
     return null;
   }
 
@@ -76,11 +77,11 @@ export default function TeamForm() {
         status: "pending",
       });
 
-      setMessage("Submitted. We'll review and get back to you.");
+      setMessage("Submitted successfully ✅");
       setMessageType("success");
       setForm({ name: "", role: "", bio: "", email: "", image: "" });
     } catch (error) {
-      setMessage("Couldn’t submit right now. Try again.");
+      setMessage("Submission failed. Try again.");
       setMessageType("error");
     } finally {
       setLoading(false);
@@ -88,24 +89,18 @@ export default function TeamForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative">
+    <div className="min-h-screen flex items-center justify-center px-4">
 
-      {/* TOP NOTICE BAR (clean Shopify style) */}
+      {/* TOP NOTICE */}
       {showNotice && (
-        <div className="fixed top-0 left-0 w-full bg-green-500/10 backdrop-blur-md border-b border-green-400/20 text-green-300 text-sm px-4 py-3 flex items-center justify-between z-50">
+        <div className="fixed top-0 left-0 w-full bg-green-500/10 backdrop-blur-md border-b border-green-400/20 text-green-300 text-sm px-4 py-3 flex justify-between z-50">
           <p>
-            Team submissions are free for now. Starting {nextMonday}, a small fee may apply.
+            Submissions are free for now. Starting {nextMonday}, a small fee may apply.
           </p>
-          <button
-            onClick={() => setShowNotice(false)}
-            className="text-green-200 hover:text-white text-xs"
-          >
-            ✕
-          </button>
+          <button onClick={() => setShowNotice(false)}>✕</button>
         </div>
       )}
 
-      {/* FORM */}
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-xl p-8 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-md"
@@ -118,23 +113,27 @@ export default function TeamForm() {
           Add Team Member
         </h2>
 
-        {/* INPUT */}
-        {[
-          { label: "Name", key: "name", placeholder: "Full name" },
-          { label: "Role", key: "role", placeholder: "What do you do?" },
-        ].map((field) => (
-          <label key={field.key} className="block mb-4">
-            <span className="text-sm text-white/70">{field.label}</span>
-            <input
-              value={form[field.key as keyof FormState] as string}
-              onChange={(e) =>
-                update(field.key as keyof FormState, e.target.value)
-              }
-              placeholder={field.placeholder}
-              className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500 outline-none transition"
-            />
-          </label>
-        ))}
+        {/* NAME */}
+        <label className="block mb-4">
+          <span className="text-sm text-white/70">Name</span>
+          <input
+            value={form.name}
+            onChange={(e) => update("name", e.target.value)}
+            placeholder="Full name"
+            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500"
+          />
+        </label>
+
+        {/* ROLE */}
+        <label className="block mb-4">
+          <span className="text-sm text-white/70">Role</span>
+          <input
+            value={form.role}
+            onChange={(e) => update("role", e.target.value)}
+            placeholder="What do you do?"
+            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500"
+          />
+        </label>
 
         {/* BIO */}
         <label className="block mb-4">
@@ -144,7 +143,7 @@ export default function TeamForm() {
             onChange={(e) => update("bio", e.target.value)}
             rows={4}
             placeholder="Short intro..."
-            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500 outline-none transition"
+            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500"
           />
         </label>
 
@@ -155,21 +154,30 @@ export default function TeamForm() {
             value={form.email}
             onChange={(e) => update("email", e.target.value)}
             placeholder="name@example.com"
-            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500 outline-none transition"
+            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500"
           />
         </label>
 
-        {/* IMAGE */}
+        {/* IMAGE (FIXED 🔥) */}
         <label className="block mb-5">
-          <span className="text-sm text-white/70">Image URL</span>
+          <span className="text-sm text-white/70">Profile Image (Required)</span>
           <input
             value={form.image}
             onChange={(e) => update("image", e.target.value)}
-            placeholder="https://..."
-            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500 outline-none transition"
+            placeholder="Paste image link here"
+            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500"
           />
-          <p className="text-xs text-white/50 mt-1">
-            Optional
+
+          <p className="text-xs text-white/60 mt-2 leading-relaxed">
+            Upload your photo on{" "}
+            <a
+              href="https://postimage.org/"
+              target="_blank"
+              className="text-green-400 underline"
+            >
+              postimage.org
+            </a>{" "}
+            → upload → copy the **direct image link** → paste it here.
           </p>
         </label>
 
@@ -190,7 +198,7 @@ export default function TeamForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 rounded-lg bg-green-500 hover:bg-green-400 transition font-medium text-black"
+          className="w-full py-2 rounded-lg bg-green-500 hover:bg-green-400 text-black font-medium"
         >
           {loading ? "Submitting..." : "Submit"}
         </button>
@@ -207,4 +215,4 @@ export default function TeamForm() {
       </form>
     </div>
   );
-              }
+  }
