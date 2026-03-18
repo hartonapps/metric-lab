@@ -130,7 +130,7 @@ export default function TeamForm() {
           <input
             value={form.role}
             onChange={(e) => update("role", e.target.value)}
-            placeholder="What do you do?"
+            placeholder="E.g, Shopify Consultant"
             className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500"
           />
         </label>
@@ -142,7 +142,7 @@ export default function TeamForm() {
             value={form.bio}
             onChange={(e) => update("bio", e.target.value)}
             rows={4}
-            placeholder="Short intro..."
+            placeholder="Short intro... One Sentence. Use chatgpt"
             className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500"
           />
         </label>
