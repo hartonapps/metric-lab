@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 
@@ -24,6 +24,23 @@ export default function TeamForm() {
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<"error" | "success" | null>(null);
   const [showNotice, setShowNotice] = useState(true);
+  const [nextMonday, setNextMonday] = useState("");
+
+  useEffect(() => {
+    const today = new Date();
+    const day = today.getDay();
+    const diff = (8 - day) % 7 || 7; // next Monday
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diff);
+
+    setNextMonday(
+      monday.toLocaleDateString(undefined, {
+        weekday: "long",
+        day: "numeric",
+        month: "short",
+      })
+    );
+  }, []);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -54,21 +71,16 @@ export default function TeamForm() {
     setLoading(true);
     try {
       await addDoc(collection(db, "teams"), {
-        name: form.name.trim(),
-        role: form.role.trim(),
-        bio: form.bio.trim(),
-        email: form.email.trim(),
-        image: form.image.trim() || null,
+        ...form,
         createdAt: serverTimestamp(),
         status: "pending",
       });
 
-      setMessage("Team member submitted successfully 🚀");
+      setMessage("Submitted. We'll review and get back to you.");
       setMessageType("success");
       setForm({ name: "", role: "", bio: "", email: "", image: "" });
     } catch (error) {
-      console.error(error);
-      setMessage("Something went wrong. Try again.");
+      setMessage("Couldn’t submit right now. Try again.");
       setMessageType("error");
     } finally {
       setLoading(false);
@@ -76,15 +88,29 @@ export default function TeamForm() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4">
-      
+    <div className="min-h-screen flex items-center justify-center px-4 relative">
+
+      {/* TOP NOTICE BAR (clean Shopify style) */}
+      {showNotice && (
+        <div className="fixed top-0 left-0 w-full bg-green-500/10 backdrop-blur-md border-b border-green-400/20 text-green-300 text-sm px-4 py-3 flex items-center justify-between z-50">
+          <p>
+            Team submissions are free for now. Starting {nextMonday}, a small fee may apply.
+          </p>
+          <button
+            onClick={() => setShowNotice(false)}
+            className="text-green-200 hover:text-white text-xs"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* FORM */}
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-xl p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-white/10"
+        className="w-full max-w-xl p-8 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-md"
         style={{
-          background:
-            "linear-gradient(135deg, #0f172a 0%, #020617 100%)",
+          background: "linear-gradient(135deg, #020617 0%, #0f172a 100%)",
           color: "white",
         }}
       >
@@ -92,13 +118,13 @@ export default function TeamForm() {
           Add Team Member
         </h2>
 
-        {/* INPUTS */}
+        {/* INPUT */}
         {[
           { label: "Name", key: "name", placeholder: "Full name" },
-          { label: "Role", key: "role", placeholder: "Designer, Engineer..." },
+          { label: "Role", key: "role", placeholder: "What do you do?" },
         ].map((field) => (
           <label key={field.key} className="block mb-4">
-            <span className="text-sm text-white/80">{field.label}</span>
+            <span className="text-sm text-white/70">{field.label}</span>
             <input
               value={form[field.key as keyof FormState] as string}
               onChange={(e) =>
@@ -112,19 +138,19 @@ export default function TeamForm() {
 
         {/* BIO */}
         <label className="block mb-4">
-          <span className="text-sm text-white/80">Bio</span>
+          <span className="text-sm text-white/70">Bio</span>
           <textarea
             value={form.bio}
             onChange={(e) => update("bio", e.target.value)}
             rows={4}
-            placeholder="Short bio..."
+            placeholder="Short intro..."
             className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500 outline-none transition"
           />
         </label>
 
         {/* EMAIL */}
         <label className="block mb-4">
-          <span className="text-sm text-white/80">Email</span>
+          <span className="text-sm text-white/70">Email</span>
           <input
             value={form.email}
             onChange={(e) => update("email", e.target.value)}
@@ -135,7 +161,7 @@ export default function TeamForm() {
 
         {/* IMAGE */}
         <label className="block mb-5">
-          <span className="text-sm text-white/80">Image URL</span>
+          <span className="text-sm text-white/70">Image URL</span>
           <input
             value={form.image}
             onChange={(e) => update("image", e.target.value)}
@@ -143,7 +169,7 @@ export default function TeamForm() {
             className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500 outline-none transition"
           />
           <p className="text-xs text-white/50 mt-1">
-            Optional — use Imgur, Cloudinary, etc.
+            Optional
           </p>
         </label>
 
@@ -169,33 +195,16 @@ export default function TeamForm() {
           {loading ? "Submitting..." : "Submit"}
         </button>
 
-        {/* WHATSAPP LINK */}
+        {/* WHATSAPP */}
         <a
           href="https://whatsapp.com/channel/0029Vb7qb8Z5kg6zV4uG8E0z"
           target="_blank"
           rel="noopener noreferrer"
           className="block mt-4 text-center text-sm text-green-400 hover:text-green-300 underline"
         >
-          Have a complaint? Reach us on WhatsApp
+          Have a complaint or suggestion? Talk to us
         </a>
       </form>
-
-      {/* FLOATING NOTICE */}
-      {showNotice && (
-        <div className="fixed bottom-5 right-5 max-w-sm bg-white/10 backdrop-blur-lg border border-white/10 text-white p-4 rounded-xl shadow-xl">
-          <p className="text-sm leading-relaxed">
-            Heads up 👋 — Starting next week Monday (21st), adding team members
-            may require a small payment.
-          </p>
-
-          <button
-            onClick={() => setShowNotice(false)}
-            className="mt-3 text-xs text-green-300 hover:text-green-200 underline"
-          >
-            Got it
-          </button>
-        </div>
-      )}
     </div>
   );
-        }
+              }
