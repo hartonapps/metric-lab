@@ -3,30 +3,63 @@
 import { useState } from "react";
 import { User } from "firebase/auth";
 
+/**
+ * ✅ Extend Window type for Paystack
+ */
+declare global {
+  interface Window {
+    PaystackPop?: {
+      setup: (options: {
+        key: string;
+        email: string;
+        amount: number;
+        currency: string;
+        callback: (response: { reference: string }) => void;
+        onClose: () => void;
+      }) => {
+        openIframe: () => void;
+      };
+    };
+  }
+}
+
 type Props = {
   user: User;
   setBalance: (b: number | ((prev: number) => number)) => void;
 };
 
-// ✅ Dynamic Paystack script loader
+/**
+ * ✅ Load Paystack script safely
+ */
 const loadPaystackScript = () =>
   new Promise<void>((resolve, reject) => {
-    if (typeof window === "undefined") return reject("Window not defined");
-    if (window.PaystackPop) return resolve();
+    if (typeof window === "undefined") {
+      return reject("Window not available");
+    }
+
+    // Already loaded
+    if (window.PaystackPop) {
+      return resolve();
+    }
 
     const script = document.createElement("script");
     script.src = "https://js.paystack.co/v1/inline.js";
+    script.async = true;
+
     script.onload = () => resolve();
     script.onerror = () => reject("Failed to load Paystack script");
+
     document.body.appendChild(script);
   });
 
 export default function FundWallet({ user, setBalance }: Props) {
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number | "">("");
   const [loading, setLoading] = useState(false);
 
+  /**
+   * ✅ Handle Payment
+   */
   const handlePayment = async () => {
-    // 1️⃣ Load script
     try {
       await loadPaystackScript();
     } catch (err) {
@@ -34,44 +67,50 @@ export default function FundWallet({ user, setBalance }: Props) {
       return;
     }
 
-    // 2️⃣ Validate input
+    // Validate user
     if (!user?.email) {
       alert("User email missing");
       return;
     }
-    if (!amount || amount <= 0) {
+
+    // Validate amount
+    if (!amount || Number(amount) <= 0) {
       alert("Enter a valid amount");
       return;
     }
 
     const key = process.env.NEXT_PUBLIC_PAYSTACK_KEY;
+
     if (!key || !key.startsWith("pk_")) {
-      alert("Invalid Paystack public key!");
+      alert("Invalid Paystack public key");
       return;
     }
 
-    const amountKobo = Math.round(amount * 100);
+    const amountKobo = Math.round(Number(amount) * 100);
     setLoading(true);
 
-    // 3️⃣ Initialize Paystack
     const handler = window.PaystackPop?.setup({
       key,
       email: user.email,
       amount: amountKobo,
       currency: "NGN",
 
-      callback: function (response) {
+      callback: (response) => {
         verifyPayment(response.reference);
       },
-      onClose: function () {
+
+      onClose: () => {
         setLoading(false);
         alert("Transaction cancelled");
       },
     });
 
-    handler.openIframe();
+    handler?.openIframe();
   };
 
+  /**
+   * ✅ Verify payment on backend
+   */
   const verifyPayment = async (reference: string) => {
     try {
       const res = await fetch("/api/verify-paystack", {
@@ -79,14 +118,20 @@ export default function FundWallet({ user, setBalance }: Props) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ reference, uid: user.uid }),
+        body: JSON.stringify({
+          reference,
+          uid: user.uid,
+        }),
       });
 
       const data = await res.json();
 
       if (data.success) {
         alert("Payment successful ✅");
-        setBalance((prev) => prev + amount);
+
+        // Update balance safely
+        setBalance((prev) => prev + Number(amount));
+        setAmount(""); // reset input
       } else {
         alert("Verification failed");
         console.error("Verification error:", data.message || data);
@@ -110,8 +155,10 @@ export default function FundWallet({ user, setBalance }: Props) {
       <input
         type="number"
         placeholder="Enter amount"
-        value={amount || ""}
-        onChange={(e) => setAmount(Number(e.target.value))}
+        value={amount}
+        onChange={(e) =>
+          setAmount(e.target.value ? Number(e.target.value) : "")
+        }
         className="bg-white px-4 py-2 rounded-lg border border-gray-300 text-black placeholder-gray-400 w-full sm:w-40"
       />
 
@@ -119,11 +166,11 @@ export default function FundWallet({ user, setBalance }: Props) {
         type="submit"
         disabled={loading}
         className={`px-5 py-2 rounded-lg font-medium transition w-full sm:w-auto
-          ${
-            loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-green-500 hover:bg-green-600 active:scale-95"
-          } text-white`}
+        ${
+          loading
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-green-500 hover:bg-green-600 active:scale-95"
+        } text-white`}
       >
         {loading ? "Processing..." : "Fund Wallet"}
       </button>
