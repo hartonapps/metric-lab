@@ -1,6 +1,7 @@
 // lib/firebaseClient.ts
 import { initializeApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -34,3 +35,4 @@ if (typeof window !== "undefined") {
 
 export const db = getFirestore();
 export { analytics };
+export const auth = getAuth();
