@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebaseClient";
+import { User } from "firebase/auth";
 import TeamForm from "@/components/TeamForm";
 import FundWallet from "@/components/FundWallet";
 import { getUserBalance, createUserProfile } from "@/lib/firebaseUsers";
 
 export default function AddTeamPage() {
-  const [user, setUser] = useState(null);
+const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [balance, setBalance] = useState(0);
 
