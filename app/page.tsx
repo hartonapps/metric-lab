@@ -1,13 +1,16 @@
+"use client";
 import Section from "../components/Section";
 import ServiceCard from "../components/ServiceCard";
 import TeamCard from "../components/TeamCard";
 import FAQItem from "../components/FaqItem";
 import Link from "next/link";
+import TrackPage from "@/components/analytics/TrackPage";
+
 
 export default function Home() {
   return (
     <main>
-
+ <TrackPage pageName="Home Page" />
       {/* HERO */}
       <Section dark>
         <div className="max-w-3xl">
@@ -218,3 +221,4 @@ export default function Home() {
     </main>
   );
 }
+

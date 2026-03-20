@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
+import { User } from "firebase/auth";
 
 type FormState = {
   name: string;
@@ -11,7 +12,13 @@ type FormState = {
   image: string;
 };
 
-export default function TeamForm() {
+type TeamFormProps = {
+  user: User;
+  balance: number;
+  setBalance: (b: number | ((prev: number) => number)) => void;
+};
+
+export default function TeamForm({ user, balance, setBalance }: TeamFormProps) {
   const [form, setForm] = useState<FormState>({
     name: "",
     role: "",
@@ -21,6 +28,7 @@ export default function TeamForm() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<"error" | "success" | null>(null);
   const [showNotice, setShowNotice] = useState(true);
@@ -43,7 +51,7 @@ export default function TeamForm() {
   }, []);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
-    setForm(prev => ({ ...prev, [key]: value }));
+    setForm((prev) => ({ ...prev, [key]: value }));
   }
 
   function validate() {
@@ -51,10 +59,40 @@ export default function TeamForm() {
     if (!form.role.trim()) return "Role is required.";
     if (!form.email.trim()) return "Email is required.";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) return "Enter a valid email.";
-    if (!form.image.trim()) return "Image is required.";
-    if (!/^https?:\/\/.+\..+/.test(form.image))
-      return "Paste a valid image link.";
+    if (!form.image) return "Upload an image.";
     return null;
+  }
+
+  async function handleImageUpload(file: File) {
+    const apiKey = process.env.NEXT_PUBLIC_IMGBB_KEY;
+    const formData = new FormData();
+    formData.append("image", file);
+
+    setUploading(true);
+    setMessage("Uploading image...");
+    setMessageType(null);
+
+    try {
+      const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        update("image", data.data.url);
+        setMessage("Image uploaded successfully ✅");
+        setMessageType("success");
+      } else {
+        throw new Error();
+      }
+    } catch {
+      setMessage("Image upload failed ❌");
+      setMessageType("error");
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -69,18 +107,57 @@ export default function TeamForm() {
       return;
     }
 
+    const SUBMISSION_FEE = 100;
+
+    if (balance < SUBMISSION_FEE) {
+      setMessage("Insufficient balance. Please fund your wallet.");
+      setMessageType("error");
+      return;
+    }
+
     setLoading(true);
+
     try {
+      const res = await fetch("/api/deduct-balance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uid: user.uid,
+          amount: SUBMISSION_FEE,
+          type: "team_submission",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        setMessage(data.message || "Payment failed");
+        setMessageType("error");
+        setLoading(false);
+        return;
+      }
+
       await addDoc(collection(db, "teams"), {
         ...form,
+        userId: user.uid,
         createdAt: serverTimestamp(),
         status: "pending",
       });
 
-      setMessage("Submitted successfully ✅");
+      setBalance(data.newBalance);
+
+      setMessage("Submitted successfully ✅ (₦100 deducted)");
       setMessageType("success");
-      setForm({ name: "", role: "", bio: "", email: "", image: "" });
-    } catch (error) {
+
+      setForm({
+        name: "",
+        role: "",
+        bio: "",
+        email: "",
+        image: "",
+      });
+    } catch (err) {
+      console.error(err);
       setMessage("Submission failed. Try again.");
       setMessageType("error");
     } finally {
@@ -88,131 +165,116 @@ export default function TeamForm() {
     }
   }
 
+  function Notice() {
+    if (!showNotice) return null;
+
+    return (
+      <div className="fixed top-0 left-0 w-full z-50 px-4 py-3 text-xs sm:text-sm flex justify-between items-center bg-green-500/10 backdrop-blur border-b border-green-400/20 text-green-300">
+        <p className="pr-2">
+          Submissions are free for now. Starting {nextMonday}, a fee may apply.
+        </p>
+        <button onClick={() => setShowNotice(false)}>✕</button>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+<div className="min-h-screen bg-white px-4 sm:px-6 lg:px-10 py-10">
 
-      {/* TOP NOTICE */}
-      {showNotice && (
-        <div className="fixed top-0 left-0 w-full bg-green-500/10 backdrop-blur-md border-b border-green-400/20 text-green-300 text-sm px-4 py-3 flex justify-between z-50">
-          <p>
-            Submissions are free for now. Starting {nextMonday}, a small fee may apply.
-          </p>
-          <button onClick={() => setShowNotice(false)}>✕</button>
+<form
+  onSubmit={handleSubmit}
+className="w-full max-w-4xl mx-auto space-y-8 text-gray-900">
+        {/* HEADER */}
+<p className="text-sm text-gray-500 break-all">
+ Logged in as: {user.email}
+</p>
+
+<h2 className="text-3xl font-bold mt-1 text-gray-900">
+  Add Team Member
+</h2>
+
+        {/* INPUTS */}
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+  <input
+    placeholder="Name"
+    value={form.name}
+    onChange={(e) => update("name", e.target.value)}
+className="bg-transparent border-b border-gray-300 py-3 outline-none focus:border-green-500 transition text-gray-900 placeholder-gray-400"
+  />
+
+  <input
+    placeholder="Role"
+    value={form.role}
+    onChange={(e) => update("role", e.target.value)}
+className="bg-transparent border-b border-gray-300 py-3 outline-none focus:border-green-500 transition text-gray-900 placeholder-gray-400"  />
+
+  <textarea
+    placeholder="Bio"
+    value={form.bio}
+    onChange={(e) => update("bio", e.target.value)}
+    rows={3}
+className="bg-transparent border-b border-gray-300 py-3 outline-none focus:border-green-500 transition text-gray-900 placeholder-gray-400"  />
+
+  <input
+    placeholder="Email"
+    value={form.email}
+    onChange={(e) => update("email", e.target.value)}
+className="bg-transparent border-b border-gray-300 py-3 outline-none focus:border-green-500 transition text-gray-900 placeholder-gray-400"  />
+</div>
+
+        {/* IMAGE */}
+        <div className="mt-4">
+          <input
+            type="file"
+            accept="image/*"
+            className="text-sm"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImageUpload(file);
+            }}
+          />
+
+          
+
+          {form.image && (
+            <img
+              src={form.image}
+              alt="preview"
+              className="mt-3 w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border"
+            />
+          )}
         </div>
-      )}
-
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-xl p-8 rounded-2xl shadow-2xl border border-white/10 backdrop-blur-md"
-        style={{
-          background: "linear-gradient(135deg, #020617 0%, #0f172a 100%)",
-          color: "white",
-        }}
-      >
-        <h2 className="text-3xl font-semibold mb-6 text-center">
-          Add Team Member
-        </h2>
-
-        {/* NAME */}
-        <label className="block mb-4">
-          <span className="text-sm text-white/70">Name</span>
-          <input
-            value={form.name}
-            onChange={(e) => update("name", e.target.value)}
-            placeholder="Full name"
-            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500"
-          />
-        </label>
-
-        {/* ROLE */}
-        <label className="block mb-4">
-          <span className="text-sm text-white/70">Role</span>
-          <input
-            value={form.role}
-            onChange={(e) => update("role", e.target.value)}
-            placeholder="E.g, Shopify Consultant"
-            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500"
-          />
-        </label>
-
-        {/* BIO */}
-        <label className="block mb-4">
-          <span className="text-sm text-white/70">Bio</span>
-          <textarea
-            value={form.bio}
-            onChange={(e) => update("bio", e.target.value)}
-            rows={4}
-            placeholder="Short intro... One Sentence. Use chatgpt"
-            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500"
-          />
-        </label>
-
-        {/* EMAIL */}
-        <label className="block mb-4">
-          <span className="text-sm text-white/70">Email</span>
-          <input
-            value={form.email}
-            onChange={(e) => update("email", e.target.value)}
-            placeholder="name@example.com"
-            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500"
-          />
-        </label>
-
-        {/* IMAGE (FIXED 🔥) */}
-        <label className="block mb-5">
-          <span className="text-sm text-white/70">Profile Image (Required)</span>
-          <input
-            value={form.image}
-            onChange={(e) => update("image", e.target.value)}
-            placeholder="Paste image link here"
-            className="mt-1 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-green-400 focus:ring-2 focus:ring-green-500"
-          />
-
-          <p className="text-xs text-white/60 mt-2 leading-relaxed">
-            Upload your photo on{" "}
-            <a
-              href="https://postimage.org/"
-              target="_blank"
-              className="text-green-400 underline"
-            >
-              postimage.org
-            </a>{" "}
-            → upload → copy the **direct image link** → paste it here.
-          </p>
-        </label>
 
         {/* MESSAGE */}
         {message && (
-          <div
-            className={`mb-4 text-sm ${
-              messageType === "error"
-                ? "text-red-400"
-                : "text-green-400"
+          <p
+            className={`mt-3 text-sm ${
+              messageType === "error" ? "text-red-400" : "text-green-400"
             }`}
           >
             {message}
-          </div>
+          </p>
         )}
 
         {/* BUTTON */}
         <button
           type="submit"
-          disabled={loading}
-          className="w-full py-2 rounded-lg bg-green-500 hover:bg-green-400 text-black font-medium"
+          disabled={loading || uploading || balance < 100}
+          className="w-full mt-5 py-3 rounded-lg bg-green-500 text-black font-medium disabled:opacity-50"
         >
           {loading ? "Submitting..." : "Submit"}
         </button>
 
-        {/* WHATSAPP */}
+        {/* FOOTER */}
         <a
           href="https://whatsapp.com/channel/0029Vb7qb8Z5kg6zV4uG8E0z"
           target="_blank"
-          rel="noopener noreferrer"
-          className="block mt-4 text-center text-sm text-green-400 hover:text-green-300 underline"
+          className="block text-center mt-4 text-green-400 text-sm underline"
         >
-          Have a complaint or suggestion? Talk to us
+          Need help? Contact us
         </a>
       </form>
     </div>
   );
-  }
+}
