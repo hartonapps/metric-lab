@@ -122,7 +122,8 @@ const userTx = (transactions || []).filter(
               onChange={(e) => setAmount(e.target.value)}
               className="p-2 rounded bg-black/40 border border-white/10"
             />
-
+<br />
+            <br />
             <button
               onClick={() =>
                 adjustBalance(selectedUser.id, Number(amount))
