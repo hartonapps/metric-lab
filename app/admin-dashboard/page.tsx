@@ -49,7 +49,7 @@ export default function AdminPage() {
   transactions={transactions} 
   users={users} 
 />
-        <Teams teams={teams} />
+        <Teams />
       </div>
     </AdminGate>
   );
