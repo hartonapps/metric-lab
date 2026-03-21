@@ -45,7 +45,10 @@ export default function AdminPage() {
         <Users />
         <br />
         <br />
-        <Transactions transactions={transactions} />
+        <Transactions 
+  transactions={transactions} 
+  users={users} 
+/>
         <Teams teams={teams} />
       </div>
     </AdminGate>
