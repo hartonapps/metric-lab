@@ -23,24 +23,39 @@ export default function Transactions({ transactions = [], users = [] }: Props) {
 
   // 🔹 Filtered transactions
 const filteredTx = useMemo(() => {
-  let tx = [...transactions];
+  let tx = [...(transactions || [])];
 
   // Filter by status
   if (filter !== "all") {
-    tx = tx.filter((t) => t.status === filter);
+    tx = tx.filter((t) => t?.status === filter);
   }
 
   // Filter by user UID or email safely
   if (search.trim()) {
+    const searchLower = search.toLowerCase();
+
     tx = tx.filter((t) => {
-      const user = users.find((u) => u.uid === t.userId);
-      const email = user?.email ?? ""; // <-- safe fallback
-      return t.userId.includes(search) || email.toLowerCase().includes(search.toLowerCase());
+      const user = (users || []).find((u) => u?.uid === t?.userId);
+
+      const email =
+        user && typeof user.email === "string"
+          ? user.email.toLowerCase()
+          : "";
+
+      const uid =
+        typeof t?.userId === "string"
+          ? t.userId.toLowerCase()
+          : "";
+
+      return uid.includes(searchLower) || email.includes(searchLower);
     });
   }
 
-  // Sort newest first (optional)
-  tx.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+  // Sort newest first safely
+  tx.sort(
+    (a, b) =>
+      (b?.timestamp?.seconds || 0) - (a?.timestamp?.seconds || 0)
+  );
 
   return tx;
 }, [transactions, users, search, filter]);
