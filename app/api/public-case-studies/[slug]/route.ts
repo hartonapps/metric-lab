@@ -1,19 +1,38 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebaseAdmin";
 
 export const runtime = "nodejs";
 
-export async function GET(req: Request, { params }: { params: { slug: string } }) {
+export async function GET(
+  req: NextRequest,
+  context: { params: Promise<{ slug: string }> }
+) {
   try {
-    const slug = String(params.slug || "").trim();
-    if (!slug) return NextResponse.json({ success: false, message: "Slug required" }, { status: 400 });
+    const { slug } = await context.params;
 
-    const snap = await adminDb.collection("caseStudies").where("slug", "==", slug).limit(1).get();
+    const cleanSlug = String(slug || "").trim();
+    if (!cleanSlug) {
+      return NextResponse.json(
+        { success: false, message: "Slug required" },
+        { status: 400 }
+      );
+    }
+
+    const snap = await adminDb
+      .collection("caseStudies")
+      .where("slug", "==", cleanSlug)
+      .limit(1)
+      .get();
+
     if (snap.empty) {
-      return NextResponse.json({ success: false, message: "Not found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, message: "Not found" },
+        { status: 404 }
+      );
     }
 
     const data = snap.docs[0].data();
+
     return NextResponse.json({
       success: true,
       study: {
@@ -31,6 +50,10 @@ export async function GET(req: Request, { params }: { params: { slug: string } }
     });
   } catch (err) {
     console.error("Case study detail error:", err);
-    return NextResponse.json({ success: false, message: "Unable to load case study" }, { status: 500 });
+
+    return NextResponse.json(
+      { success: false, message: "Unable to load case study" },
+      { status: 500 }
+    );
   }
 }
