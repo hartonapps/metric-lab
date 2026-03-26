@@ -85,8 +85,7 @@ export default function Users({ transactions }: any) {
             className="cursor-pointer bg-white/5 border border-white/10 p-4 rounded-xl hover:bg-white/10 transition"
           >
             <p className="font-medium">{u.email}</p>
-            <p className="text-sm text-gray-400">?{u.balance || 0}</p>
-
+            <p className="text-sm text-gray-400">Balance: {u.balance || 0}</p>
             {u.blocked && <span className="text-xs text-red-400">Blocked</span>}
           </div>
         ))}
@@ -97,7 +96,7 @@ export default function Users({ transactions }: any) {
           <h3 className="text-lg font-semibold">{selectedUser.email}</h3>
 
           <p>UID: {selectedUser.uid}</p>
-          <p>Balance: ?{selectedUser.balance || 0}</p>
+          <p>Balance: {selectedUser.balance || 0}</p>
 
           <div className="flex gap-2">
             <input
@@ -108,28 +107,27 @@ export default function Users({ transactions }: any) {
               className="p-2 rounded bg-black/40 border border-white/10"
             />
 
-<br />
-            <br />
             <button
-              onClick={() =>
-                adjustBalance(selectedUser.id, Number(amount))
-              }
+              onClick={() => adjustBalance(selectedUser.id, Number(amount))}
               className="bg-green-600 px-3 py-2 rounded"
             >
-
-            <button onClick={() => adjustBalance(selectedUser.id, Number(amount))} className="bg-green-600 px-3 py-2 rounded">
-
               Add
             </button>
 
-            <button onClick={() => adjustBalance(selectedUser.id, -Number(amount))} className="bg-red-600 px-3 py-2 rounded">
+            <button
+              onClick={() => adjustBalance(selectedUser.id, -Number(amount))}
+              className="bg-red-600 px-3 py-2 rounded"
+            >
               Remove
             </button>
-          </div>
 
-          <button onClick={() => toggleBlock(selectedUser.id, selectedUser.blocked)} className="bg-yellow-600 px-3 py-2 rounded">
-            {selectedUser.blocked ? "Unblock User" : "Block User"}
-          </button>
+            <button
+              onClick={() => toggleBlock(selectedUser.id, selectedUser.blocked)}
+              className="bg-yellow-600 px-3 py-2 rounded"
+            >
+              {selectedUser.blocked ? "Unblock User" : "Block User"}
+            </button>
+          </div>
 
           <div>
             <h4 className="mt-4 mb-2 font-medium">User Transactions</h4>
@@ -137,9 +135,11 @@ export default function Users({ transactions }: any) {
             <div className="max-h-60 overflow-y-auto space-y-2">
               {userTx.map((t: any) => (
                 <div key={t.id} className="flex justify-between text-sm border-b border-white/5 pb-1">
-                  <span>?{t.amount}</span>
+                  <span>{t.amount}</span>
                   <span>{t.type}</span>
-                  <span className={t.status === "success" ? "text-green-400" : "text-red-400"}>{t.status}</span>
+                  <span className={t.status === "success" ? "text-green-400" : "text-red-400"}>
+                    {t.status}
+                  </span>
                 </div>
               ))}
             </div>
