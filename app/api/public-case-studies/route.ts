@@ -1,11 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebaseAdmin";
 
 export const runtime = "nodejs";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
-    const snap = await adminDb.collection("caseStudies").orderBy("createdAt", "desc").get();
+    const snap = await adminDb
+      .collection("caseStudies")
+      .orderBy("createdAt", "desc")
+      .get();
+
     const studies = snap.docs.map((doc) => {
       const data = doc.data();
       return {
@@ -18,12 +22,18 @@ export async function GET(req: Request) {
       };
     });
 
-    const limit = Number(req.nextUrl.searchParams.get("limit") || "");
-    const limited = Number.isFinite(limit) && limit > 0 ? studies.slice(0, limit) : studies;
+    // ✅ Use NextRequest for nextUrl
+    const limitParam = req.nextUrl.searchParams.get("limit") || "";
+    const limit = Number(limitParam);
+    const limited =
+      Number.isFinite(limit) && limit > 0 ? studies.slice(0, limit) : studies;
 
     return NextResponse.json({ success: true, studies: limited });
   } catch (err) {
     console.error("Public case studies error:", err);
-    return NextResponse.json({ success: false, message: "Unable to load case studies" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: "Unable to load case studies" },
+      { status: 500 }
+    );
   }
 }
