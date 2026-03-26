@@ -1,100 +1,101 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebaseClient";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
   onAuthStateChanged,
-  User,
 } from "firebase/auth";
-import { useRouter } from "next/navigation";
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSignup, setIsSignup] = useState(false);
   const [message, setMessage] = useState("");
-  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) router.push("/add-team"); // redirect if logged in
+      if (currentUser) {
+        router.replace("/add-team");
+      }
     });
 
     return () => unsubscribe();
   }, [router]);
 
-  const handleSignup = async () => {
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      setMessage("Signup successful ✅");
-    } catch (err: any) {
-      setMessage(err.message);
-    }
-  };
+  const submit = async () => {
+    setMessage("");
 
-  const handleLogin = async () => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      setMessage("Login successful ✅");
-    } catch (err: any) {
-      setMessage(err.message);
+    if (!email.trim() || !password.trim()) {
+      setMessage("Email and password are required.");
+      return;
     }
-  };
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    setMessage("Logged out ✅");
+    if (password.length < 6) {
+      setMessage("Password must be at least 6 characters.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      if (isSignup) {
+        await createUserWithEmailAndPassword(auth, email.trim(), password);
+        setMessage("Account created. Redirecting...");
+      } else {
+        await signInWithEmailAndPassword(auth, email.trim(), password);
+        setMessage("Login successful. Redirecting...");
+      }
+    } catch (err: any) {
+      setMessage(err?.message || "Authentication failed.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4">
-      <div className="p-6 rounded-lg bg-gray-800 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-center">Login / Signup</h2>
+    <div className="flex min-h-screen items-center justify-center bg-gray-900 px-4 text-white">
+      <div className="w-full max-w-md rounded-xl bg-gray-800 p-6 shadow-xl">
+        <h2 className="mb-1 text-2xl font-bold">{isSignup ? "Create account" : "Sign in"}</h2>
+        <p className="mb-5 text-sm text-gray-300">Use your account to manage wallet, slots, and team submissions.</p>
 
-        {message && <p className="mb-3 text-center text-green-400">{message}</p>}
+        {message && <p className="mb-3 text-sm text-green-300">{message}</p>}
 
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full mb-3 px-3 py-2 rounded bg-gray-700 text-white"
+          className="mb-3 w-full rounded bg-gray-700 px-3 py-2 text-white outline-none ring-1 ring-transparent focus:ring-blue-500"
         />
+
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-4 px-3 py-2 rounded bg-gray-700 text-white"
+          className="mb-4 w-full rounded bg-gray-700 px-3 py-2 text-white outline-none ring-1 ring-transparent focus:ring-blue-500"
         />
 
-        <div className="flex justify-between">
-          <button
-            onClick={handleSignup}
-            className="bg-green-500 px-4 py-2 rounded hover:bg-green-400"
-          >
-            Signup
-          </button>
-          <button
-            onClick={handleLogin}
-            className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-400"
-          >
-            Login
-          </button>
-          {user && (
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 px-4 py-2 rounded hover:bg-red-400"
-            >
-              Logout
-            </button>
-          )}
-        </div>
+        <button
+          onClick={() => void submit()}
+          disabled={loading}
+          className="w-full rounded bg-blue-600 px-4 py-2 font-medium transition hover:bg-blue-500 disabled:opacity-60"
+        >
+          {loading ? "Please wait..." : isSignup ? "Create account" : "Sign in"}
+        </button>
+
+        <button
+          onClick={() => setIsSignup((v) => !v)}
+          className="mt-3 w-full text-sm text-blue-300 underline"
+        >
+          {isSignup ? "Already have an account? Sign in" : "Need an account? Create one"}
+        </button>
       </div>
     </div>
   );

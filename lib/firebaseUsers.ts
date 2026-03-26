@@ -1,11 +1,15 @@
-// lib/firebaseUsers.ts
-import { doc, setDoc, getDoc, updateDoc, serverTimestamp, collection, addDoc } from "firebase/firestore";
-import { db } from "./firebaseClient";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { User } from "firebase/auth";
+import { db } from "./firebaseClient";
 
-/**
- * ✅ Create a Firestore user profile with wallet
- */
 export async function createUserProfile(user: User) {
   const userRef = doc(db, "users", user.uid);
   const snap = await getDoc(userRef);
@@ -14,55 +18,41 @@ export async function createUserProfile(user: User) {
     await setDoc(userRef, {
       uid: user.uid,
       email: user.email,
-      balance: 0,          // start wallet with 0
+      balance: 0,
+      slots: 0,
+      role: "user",
+      blocked: false,
       createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
     });
+    return;
   }
+
+  const data = snap.data();
+  const patch: Record<string, unknown> = {
+    updatedAt: serverTimestamp(),
+  };
+
+  if (typeof data.balance !== "number") patch.balance = 0;
+  if (typeof data.slots !== "number") patch.slots = 0;
+  if (!data.role) patch.role = "user";
+  if (typeof data.blocked !== "boolean") patch.blocked = false;
+
+  await updateDoc(userRef, patch);
 }
 
-/**
- * ✅ Get user wallet balance
- */
 export async function getUserBalance(uid: string) {
-  const userRef = doc(db, "users", uid);
-  const snap = await getDoc(userRef);
+  const snap = await getDoc(doc(db, "users", uid));
   if (!snap.exists()) throw new Error("User not found");
   return snap.data()?.balance || 0;
 }
 
-/**
- * ✅ Add funds to wallet and log transaction
- */
-export async function addFunds(uid: string, amount: number) {
-  const userRef = doc(db, "users", uid);
-  const snap = await getDoc(userRef);
-  if (!snap.exists()) throw new Error("User not found");
-
-  const balance = snap.data()?.balance || 0;
-  const newBalance = balance + amount;
-
-  await updateDoc(userRef, { balance: newBalance });
-
-  // 🔹 Log deposit in transactions
-  await logDeposit(uid, amount);
-
-  return newBalance;
-}
-
-/**
- * ✅ Log deposit in transactions collection
- */
 export async function logDeposit(uid: string, amount: number) {
-  try {
-    await addDoc(collection(db, "transactions"), {
-      uid,
-      amount,
-      type: "deposit",
-      status: "success",
-      createdAt: serverTimestamp(),
-    });
-    console.log("Deposit logged successfully!");
-  } catch (err) {
-    console.error("Failed to log deposit:", err);
-  }
+  await addDoc(collection(db, "transactions"), {
+    uid,
+    amount,
+    type: "deposit",
+    status: "success",
+    createdAt: serverTimestamp(),
+  });
 }

@@ -1,8 +1,8 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebaseClient";
+
+import React, { useState } from "react";
 import { User } from "firebase/auth";
+import { authedFetch } from "@/lib/clientAuth";
 
 type FormState = {
   name: string;
@@ -14,11 +14,11 @@ type FormState = {
 
 type TeamFormProps = {
   user: User;
-  balance: number;
-  setBalance: (b: number | ((prev: number) => number)) => void;
+  slots: number;
+  onTeamSubmitted: (nextSlots: number) => void;
 };
 
-export default function TeamForm({ user, balance, setBalance }: TeamFormProps) {
+export default function TeamForm({ user, slots, onTeamSubmitted }: TeamFormProps) {
   const [form, setForm] = useState<FormState>({
     name: "",
     role: "",
@@ -31,24 +31,6 @@ export default function TeamForm({ user, balance, setBalance }: TeamFormProps) {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<"error" | "success" | null>(null);
-  const [showNotice, setShowNotice] = useState(true);
-  const [nextMonday, setNextMonday] = useState("");
-
-  useEffect(() => {
-    const today = new Date();
-    const day = today.getDay();
-    const diff = (8 - day) % 7 || 7;
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + diff);
-
-    setNextMonday(
-      monday.toLocaleDateString(undefined, {
-        weekday: "long",
-        day: "numeric",
-        month: "short",
-      })
-    );
-  }, []);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -59,12 +41,19 @@ export default function TeamForm({ user, balance, setBalance }: TeamFormProps) {
     if (!form.role.trim()) return "Role is required.";
     if (!form.email.trim()) return "Email is required.";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) return "Enter a valid email.";
-    if (!form.image) return "Upload an image.";
+    if (!form.image) return "Upload an image first.";
     return null;
   }
 
   async function handleImageUpload(file: File) {
     const apiKey = process.env.NEXT_PUBLIC_IMGBB_KEY;
+
+    if (!apiKey) {
+      setMessage("ImgBB key is missing. Add NEXT_PUBLIC_IMGBB_KEY.");
+      setMessageType("error");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("image", file);
 
@@ -80,15 +69,15 @@ export default function TeamForm({ user, balance, setBalance }: TeamFormProps) {
 
       const data = await res.json();
 
-      if (data.success) {
-        update("image", data.data.url);
-        setMessage("Image uploaded successfully ✅");
-        setMessageType("success");
-      } else {
-        throw new Error();
+      if (!data?.success || !data?.data?.url) {
+        throw new Error("Upload failed");
       }
+
+      update("image", data.data.url);
+      setMessage("Image uploaded successfully.");
+      setMessageType("success");
     } catch {
-      setMessage("Image upload failed ❌");
+      setMessage("Image upload failed. Try a smaller image.");
       setMessageType("error");
     } finally {
       setUploading(false);
@@ -107,10 +96,8 @@ export default function TeamForm({ user, balance, setBalance }: TeamFormProps) {
       return;
     }
 
-    const SUBMISSION_FEE = 100;
-
-    if (balance < SUBMISSION_FEE) {
-      setMessage("Insufficient balance. Please fund your wallet.");
+    if (slots < 1) {
+      setMessage("You have no slots left. Buy slots first.");
       setMessageType("error");
       return;
     }
@@ -118,37 +105,23 @@ export default function TeamForm({ user, balance, setBalance }: TeamFormProps) {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/deduct-balance", {
+      const res = await authedFetch("/api/team-submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          uid: user.uid,
-          amount: SUBMISSION_FEE,
-          type: "team_submission",
-        }),
+        body: JSON.stringify(form),
       });
 
       const data = await res.json();
 
-      if (!data.success) {
-        setMessage(data.message || "Payment failed");
+      if (!res.ok || !data?.success) {
+        setMessage(data?.message || "Submission failed");
         setMessageType("error");
-        setLoading(false);
         return;
       }
 
-      await addDoc(collection(db, "teams"), {
-        ...form,
-        userId: user.uid,
-        createdAt: serverTimestamp(),
-        status: "pending",
-      });
+      onTeamSubmitted(data.newSlots);
 
-      setBalance(data.newBalance);
-
-      setMessage("Submitted successfully ✅ (₦100 deducted)");
+      setMessage("Team member submitted successfully.");
       setMessageType("success");
-
       setForm({
         name: "",
         role: "",
@@ -156,8 +129,7 @@ export default function TeamForm({ user, balance, setBalance }: TeamFormProps) {
         email: "",
         image: "",
       });
-    } catch (err) {
-      console.error(err);
+    } catch {
       setMessage("Submission failed. Try again.");
       setMessageType("error");
     } finally {
@@ -165,66 +137,44 @@ export default function TeamForm({ user, balance, setBalance }: TeamFormProps) {
     }
   }
 
-  function Notice() {
-    if (!showNotice) return null;
-
-    return (
-      <div className="fixed top-0 left-0 w-full z-50 px-4 py-3 text-xs sm:text-sm flex justify-between items-center bg-green-500/10 backdrop-blur border-b border-green-400/20 text-green-300">
-        <p className="pr-2">
-          Submissions are free for now. Starting {nextMonday}, a fee may apply.
-        </p>
-        <button onClick={() => setShowNotice(false)}>✕</button>
-      </div>
-    );
-  }
-
   return (
-<div className="min-h-screen bg-white px-4 sm:px-6 lg:px-10 py-10">
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+      <p className="text-sm text-gray-500 break-all">Logged in as: {user.email}</p>
+      <h2 className="mt-1 text-2xl font-bold text-gray-900">Create Team Entry</h2>
 
-<form
-  onSubmit={handleSubmit}
-className="w-full max-w-4xl mx-auto space-y-8 text-gray-900">
-        {/* HEADER */}
-<p className="text-sm text-gray-500 break-all">
- Logged in as: {user.email}
-</p>
+      <form onSubmit={handleSubmit} className="mt-6 space-y-6 text-gray-900">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <input
+            placeholder="Name"
+            value={form.name}
+            onChange={(e) => update("name", e.target.value)}
+            className="rounded-lg border border-gray-300 px-3 py-3 outline-none focus:border-green-500"
+          />
 
-<h2 className="text-3xl font-bold mt-1 text-gray-900">
-  Add Team Member
-</h2>
+          <input
+            placeholder="Role"
+            value={form.role}
+            onChange={(e) => update("role", e.target.value)}
+            className="rounded-lg border border-gray-300 px-3 py-3 outline-none focus:border-green-500"
+          />
 
-        {/* INPUTS */}
-<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <textarea
+            placeholder="Bio"
+            value={form.bio}
+            onChange={(e) => update("bio", e.target.value)}
+            rows={4}
+            className="rounded-lg border border-gray-300 px-3 py-3 outline-none focus:border-green-500 sm:col-span-2"
+          />
 
-  <input
-    placeholder="Name"
-    value={form.name}
-    onChange={(e) => update("name", e.target.value)}
-className="bg-transparent border-b border-gray-300 py-3 outline-none focus:border-green-500 transition text-gray-900 placeholder-gray-400"
-  />
+          <input
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => update("email", e.target.value)}
+            className="rounded-lg border border-gray-300 px-3 py-3 outline-none focus:border-green-500 sm:col-span-2"
+          />
+        </div>
 
-  <input
-    placeholder="Role"
-    value={form.role}
-    onChange={(e) => update("role", e.target.value)}
-className="bg-transparent border-b border-gray-300 py-3 outline-none focus:border-green-500 transition text-gray-900 placeholder-gray-400"  />
-
-  <textarea
-    placeholder="Bio"
-    value={form.bio}
-    onChange={(e) => update("bio", e.target.value)}
-    rows={3}
-className="bg-transparent border-b border-gray-300 py-3 outline-none focus:border-green-500 transition text-gray-900 placeholder-gray-400"  />
-
-  <input
-    placeholder="Email"
-    value={form.email}
-    onChange={(e) => update("email", e.target.value)}
-className="bg-transparent border-b border-gray-300 py-3 outline-none focus:border-green-500 transition text-gray-900 placeholder-gray-400"  />
-</div>
-
-        {/* IMAGE */}
-        <div className="mt-4">
+        <div>
           <input
             type="file"
             accept="image/*"
@@ -235,46 +185,38 @@ className="bg-transparent border-b border-gray-300 py-3 outline-none focus:borde
             }}
           />
 
-          
-
           {form.image && (
             <img
               src={form.image}
               alt="preview"
-              className="mt-3 w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border"
+              className="mt-3 h-20 w-20 rounded-full border object-cover"
             />
           )}
         </div>
 
-        {/* MESSAGE */}
         {message && (
-          <p
-            className={`mt-3 text-sm ${
-              messageType === "error" ? "text-red-400" : "text-green-400"
-            }`}
-          >
+          <p className={`text-sm ${messageType === "error" ? "text-red-600" : "text-green-600"}`}>
             {message}
           </p>
         )}
 
-        {/* BUTTON */}
         <button
           type="submit"
-          disabled={loading || uploading || balance < 100}
-          className="w-full mt-5 py-3 rounded-lg bg-green-500 text-black font-medium disabled:opacity-50"
+          disabled={loading || uploading || slots < 1}
+          className="w-full rounded-lg bg-green-600 py-3 font-medium text-white transition hover:bg-green-700 disabled:opacity-50"
         >
-          {loading ? "Submitting..." : "Submit"}
+          {loading ? "Submitting..." : "Submit Team"}
         </button>
-
-        {/* FOOTER */}
-        <a
-          href="https://whatsapp.com/channel/0029Vb7qb8Z5kg6zV4uG8E0z"
-          target="_blank"
-          className="block text-center mt-4 text-green-400 text-sm underline"
-        >
-          Need help? Contact us
-        </a>
       </form>
+
+      <a
+        href="https://wa.me/2348100000000?text=Hi%20Metric%20Lab%2C%20I%20have%20a%20complaint%20or%20suggestion%20about%20Add%20Team."
+        target="_blank"
+        rel="noreferrer"
+        className="mt-4 inline-block text-sm font-medium text-green-700 underline"
+      >
+        Complaint or suggestion on WhatsApp
+      </a>
     </div>
   );
 }

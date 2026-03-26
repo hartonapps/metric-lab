@@ -1,9 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-   images: {
-    domains: ["i0.wp.com"],
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "i0.wp.com" },
+      { protocol: "https", hostname: "i.ibb.co" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "ibb.co" },
+    ],
   },
 };
 

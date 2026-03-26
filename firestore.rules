@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.role == 'admin';
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if false;
+    }
+
+    match /transactions/{txId} {
+      allow read: if isSignedIn() && (request.auth.uid == resource.data.uid || isAdmin());
+      allow create: if isSignedIn() && request.auth.uid == request.resource.data.uid;
+      allow update, delete: if false;
+    }
+
+    match /teams/{teamId} {
+      allow read: if resource.data.status == 'published' || (isSignedIn() && request.auth.uid == resource.data.userId) || isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    match /coupons/{couponCode} {
+      allow read: if false;
+      allow write: if false;
+    }
+
+    match /couponRedemptions/{id} {
+      allow read: if isSignedIn() && request.auth.uid == resource.data.uid;
+      allow write: if false;
+    }
+
+    match /analytics_visits/{visitId} {
+      allow create: if true;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

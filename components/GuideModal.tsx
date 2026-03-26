@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 type GuideModalProps = {
   isOpen: boolean;
@@ -14,46 +14,51 @@ type Slide = {
 };
 
 export default function GuideModal({ isOpen, onClose }: GuideModalProps) {
-  const slides: Slide[] = [
-    {
-      title: "Your Balance",
-      content: (
-        <p className="text-gray-700 dark:text-gray-300 text-sm">
-          This section shows your current wallet balance. You can fund your wallet
-          by entering an amount and clicking <strong>"Fund Wallet"</strong>.
-          Successful payments will update your balance in real-time.
-        </p>
-      ),
-    },
-    {
-      title: "Add Team Member",
-      content: (
-        <p className="text-gray-700 dark:text-gray-300 text-sm">
-          Use the form to submit a new team member. Fill in all fields including
-          name, role, bio, email, and upload a profile image. Each submission
-          costs ₦100, which will be deducted from your balance automatically.
-        </p>
-      ),
-    },
-    {
-      title: "Transaction History",
-      content: (
-        <p className="text-gray-700 dark:text-gray-300 text-sm">
-          All your deposits and team submissions appear here in real-time. You
-          can see the amount, type, status, and date of each transaction.
-        </p>
-      ),
-    },
-    {
-      title: "Help & Support",
-      content: (
-        <p className="text-gray-700 dark:text-gray-300 text-sm">
-          If you encounter any issues, contact us via the link below the form or
-          reach out to our support channel.
-        </p>
-      ),
-    },
-  ];
+  const slides = useMemo<Slide[]>(
+    () => [
+      {
+        title: "1. Fund Wallet",
+        content: (
+          <p className="text-sm text-gray-700">
+            Add money with Paystack in the wallet card. Your balance updates once payment is verified.
+          </p>
+        ),
+      },
+      {
+        title: "2. Buy Slots",
+        content: (
+          <p className="text-sm text-gray-700">
+            Slots are what you spend to submit team entries. Choose quantity and buy with wallet balance.
+          </p>
+        ),
+      },
+      {
+        title: "3. Redeem Coupon",
+        content: (
+          <p className="text-sm text-gray-700">
+            If you have a coupon code, redeem it to get slot credit, balance credit, or both.
+          </p>
+        ),
+      },
+      {
+        title: "4. Submit Team",
+        content: (
+          <p className="text-sm text-gray-700">
+            Fill the team form, upload image to ImgBB, then submit. One slot is deducted per successful submission.
+          </p>
+        ),
+      },
+      {
+        title: "5. Transactions",
+        content: (
+          <p className="text-sm text-gray-700">
+            Use the transaction section to track deposits, slot purchases, coupon redemptions, and slot usage.
+          </p>
+        ),
+      },
+    ],
+    []
+  );
 
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -63,49 +68,36 @@ export default function GuideModal({ isOpen, onClose }: GuideModalProps) {
   const prevSlide = () => setCurrentSlide((prev) => Math.max(prev - 1, 0));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl max-w-2xl w-full p-6 relative overflow-hidden">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-        >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl bg-white p-6 shadow-xl">
+        <button onClick={onClose} className="absolute right-4 top-4 text-gray-500 hover:text-gray-700">
           <X size={24} />
         </button>
 
-        {/* Slide content */}
-        <div className="transition-all duration-300">
-          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-            {slides[currentSlide].title}
-          </h2>
-          <div>{slides[currentSlide].content}</div>
-        </div>
+        <h2 className="mb-4 text-2xl font-bold text-gray-900">{slides[currentSlide].title}</h2>
+        <div>{slides[currentSlide].content}</div>
 
-        {/* Slide indicators */}
-        <div className="flex justify-center space-x-2 mt-6">
+        <div className="mt-6 flex justify-center space-x-2">
           {slides.map((_, idx) => (
             <span
               key={idx}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                idx === currentSlide ? "bg-blue-500 dark:bg-blue-400" : "bg-gray-300 dark:bg-gray-700"
-              }`}
+              className={`h-2.5 w-2.5 rounded-full ${idx === currentSlide ? "bg-blue-600" : "bg-gray-300"}`}
             />
           ))}
         </div>
 
-        {/* Navigation buttons */}
-        <div className="flex justify-between mt-6">
+        <div className="mt-6 flex justify-between">
           <button
             onClick={prevSlide}
             disabled={currentSlide === 0}
-            className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white disabled:opacity-40"
+            className="flex items-center px-3 py-2 text-sm font-medium text-gray-600 disabled:opacity-40"
           >
             <ChevronLeft className="mr-1" /> Prev
           </button>
           <button
             onClick={nextSlide}
             disabled={currentSlide === slides.length - 1}
-            className="flex items-center px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white disabled:opacity-40"
+            className="flex items-center px-3 py-2 text-sm font-medium text-gray-600 disabled:opacity-40"
           >
             Next <ChevronRight className="ml-1" />
           </button>

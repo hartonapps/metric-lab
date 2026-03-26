@@ -1,140 +1,74 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
-import { gsap } from "gsap";
-import { useEffect, useRef } from "react";
+import TrackPage from "@/components/analytics/TrackPage";
 
-type CaseStudy = {
+type CaseStudyPreview = {
   slug: string;
   title: string;
   industry: string;
   overview: string;
+  featuredImage: string;
 };
 
-const CASES: CaseStudy[] = [
-{
-  slug: "shopify-fashion-store-growth",
-  title: "Scaling a Shopify Fashion Store with SEO & CRO",
-  industry: "E-commerce",
-  overview:
-    "Helped a growing Shopify fashion brand increase organic traffic and sales through technical SEO improvements, optimized product pages, and conversion-focused design updates.",
-},
-{
-  slug: "shopify-conversion-redesign",
-  title: "Shopify Conversion Rate Redesign",
-  industry: "E-commerce",
-  overview:
-    "Improved conversion rate for a Shopify electronics store by redesigning product pages and simplifying checkout flow.",
-},
-];
-
-export default function CaseStudies() {
-
-  const containerRef = useRef<HTMLDivElement>(null);
+export default function CaseStudiesPage() {
+  const [studies, setStudies] = useState<CaseStudyPreview[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".case-card", {
-        opacity: 0,
-        y: 60,
-        scale: 0.95,
-        duration: 0.9,
-        ease: "power3.out",
-        stagger: 0.12,
-      });
-    }, containerRef);
+    const fetchStudies = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/public-case-studies");
+        if (!res.ok) throw new Error("Failed to load case studies");
+        const data = await res.json();
+        setStudies(data.studies || []);
+      } catch (err) {
+        console.error("Case studies load error:", err);
+        setError("Unable to load case studies.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    return () => ctx.revert();
+    void fetchStudies();
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#0A0A0A] text-white py-24 px-6">
-
-      <div className="max-w-7xl mx-auto">
-
-        {/* Header */}
-        <div className="text-center mb-20">
-
-          <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
-            Case <span className="text-[#95BF47]">Studies</span>
+    <main className="min-h-screen bg-[#0A0A0A] text-white py-16 px-6">
+      <TrackPage pageName="Case Studies" />
+      <div className="max-w-6xl mx-auto space-y-8">
+        <header className="text-center space-y-4">
+          <h1 className="text-4xl font-bold">
+            Case Studies <span className="text-[#95BF47]">Showcasing</span> Impact
           </h1>
-
-          <p className="text-gray-400 mt-4 max-w-xl mx-auto">
-            Real growth stories from brands we've scaled with SEO, CRO, and performance marketing.
+          <p className="text-gray-400">
+            Everything we ship is backed by measurable business outcomes. Browse the work below.
           </p>
+        </header>
 
-        </div>
+        {loading && <p className="text-center text-gray-400">Loading case studies…</p>}
+        {error && <p className="text-center text-red-400">{error}</p>}
 
-        {/* Case Grid */}
-        <div
-          ref={containerRef}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-10"
-        >
-
-          {CASES.map((c) => (
-
-            <motion.div
-              key={c.slug}
-              whileHover={{ y: -8 }}
-              transition={{ type: "spring", stiffness: 200 }}
-              className="case-card group relative"
-            >
-
-              <Link
-                href={`/case-studies/${c.slug}`}
-                className="block rounded-2xl border border-white/10 bg-gradient-to-b from-[#161616] to-[#0f0f0f] p-6 transition-all duration-300 hover:shadow-[0_0_40px_rgba(149,191,71,0.15)]"
-              >
-
-                {/* Hover glow */}
-                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none border border-[#95BF47]/30" />
-
-                <div className="flex flex-col gap-4">
-
-                  <div>
-
-                    <h3 className="text-xl font-semibold tracking-tight leading-snug group-hover:text-[#95BF47] transition">
-                      {c.title}
-                    </h3>
-
-                    <p className="text-sm text-gray-500 mt-1">
-                      {c.industry}
-                    </p>
-
-                    <p className="text-gray-400 text-sm mt-3 leading-relaxed">
-                      {c.overview}
-                    </p>
-
-                  </div>
-
-                  <div className="flex items-center justify-between mt-4">
-
-                    <span className="text-sm font-medium text-[#95BF47]">
-                      View Case Study
-                    </span>
-
-                    <motion.div
-                      whileHover={{ x: 4, y: -4 }}
-                      className="text-[#95BF47]"
-                    >
-                      <ArrowUpRight size={18} />
-                    </motion.div>
-
-                  </div>
-
-                </div>
-
-              </Link>
-
-            </motion.div>
-
+        <div className="grid md:grid-cols-2 gap-6">
+          {studies.map((study) => (
+            <Link key={study.slug} href={`/case-studies/${study.slug}`} className="group block rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-[#95BF47]">
+              <div className="aspect-[16/9] overflow-hidden rounded-xl bg-gray-900">
+                <img src={study.featuredImage} alt={study.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+              </div>
+              <div className="mt-4 space-y-2">
+                <p className="text-xs uppercase tracking-widest text-[#95BF47]">{study.industry}</p>
+                <h2 className="text-2xl font-semibold">{study.title}</h2>
+                <p className="text-sm text-gray-300 line-clamp-3">{study.overview}</p>
+                <span className="text-sm text-[#95BF47]">View case study →</span>
+              </div>
+            </Link>
           ))}
-
         </div>
-
       </div>
-
     </main>
   );
 }

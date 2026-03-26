@@ -1,4 +1,6 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import Section from "../components/Section";
 import ServiceCard from "../components/ServiceCard";
 import TeamCard from "../components/TeamCard";
@@ -8,6 +10,30 @@ import TrackPage from "@/components/analytics/TrackPage";
 
 
 export default function Home() {
+  const [featuredTeam, setFeaturedTeam] = useState<any[]>([]);
+  const [teamLoading, setTeamLoading] = useState(true);
+  const [teamError, setTeamError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      setTeamLoading(true);
+      setTeamError(null);
+      try {
+        const res = await fetch("/api/public-teams?limit=3");
+        if (!res.ok) throw new Error("Failed to load team preview");
+        const data = await res.json();
+        setFeaturedTeam(data.teams || []);
+      } catch (err) {
+        console.error("Team preview error:", err);
+        setTeamError("Failed to load team preview.");
+      } finally {
+        setTeamLoading(false);
+      }
+    };
+
+    void load();
+  }, []);
+
   return (
     <main>
  <TrackPage pageName="Home Page" />
@@ -157,33 +183,25 @@ export default function Home() {
     </h2>
 
     <div className="grid md:grid-cols-4 gap-8">
-
-      <TeamCard
-        name="Alice Johnson"
-        role="Shopify Engineer"
-        bio="Builds scalable and optimized Shopify stores."
-        email="alice@metriclab.com"
-        image="https://randomuser.me/api/portraits/women/68.jpg"
-      />
-
-      <TeamCard
-        name="Bob Smith"
-        role="SEO Specialist"
-        bio="Leads data-driven SEO campaigns for ecommerce growth."
-        email="bob@metriclab.com"
-        image="https://randomuser.me/api/portraits/men/32.jpg"
-      />
-
-      <TeamCard
-        name="Carol Lee"
-        role="Marketing Strategist"
-        bio="Designs high-converting marketing funnels."
-        email="carol@metriclab.com"
-        image="https://randomuser.me/api/portraits/women/44.jpg"
-      />
-
-      {/* View All Card */}
-      <TeamCard isViewAll />
+      {teamLoading ? (
+        <p className="text-center text-gray-400 md:col-span-4">Loading team preview…</p>
+      ) : teamError ? (
+        <p className="text-center text-red-400 md:col-span-4">{teamError}</p>
+      ) : (
+        <>
+          {featuredTeam.map((member) => (
+            <TeamCard
+              key={member.id}
+              name={member.name}
+              role={member.role}
+              bio={member.bio}
+              email={member.email}
+              image={member.image}
+            />
+          ))}
+          <TeamCard isViewAll />
+        </>
+      )}
     </div>
   </div>
 </Section>
