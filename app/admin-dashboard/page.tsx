@@ -94,13 +94,15 @@ const [data, setData] = useState<AdminData>({
         return;
       }
 
-      setData({
-        stats: json.stats || EMPTY_STATS,
-        users: json.users || [],
-        teams: json.teams || [],
-        transactions: json.transactions || [],
-        coupons: json.coupons || [],
-      });
+setData({
+  stats: json.stats || EMPTY_STATS,
+  users: json.users || [],
+  teams: json.teams || [],
+  transactions: json.transactions || [],
+  coupons: json.coupons || [],
+  gallery: json.gallery || [],
+  caseStudies: json.caseStudies || [],
+});
     } catch {
       setError("Failed to load admin data");
     } finally {
